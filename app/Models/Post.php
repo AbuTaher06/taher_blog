@@ -2,17 +2,14 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use illuminate\Database\Eloquent\Model;
 
-class User extends Model
+class Post extends Model
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -20,9 +17,12 @@ class User extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'post_id',
+        'category_id',
+        'title',
+        'slug',
+        'body',
+        'views'
     ];
 
     /**
@@ -40,15 +40,22 @@ class User extends Model
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+    /**
+     * Define a relationship with comments.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function user(): BelongsTo
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->BelongsTo(User::class);
     }
-    public function posts():HasMany
+    public function category(): BelongsTo
     {
-        return $this->hasMany(Post::class);
+        return $this->BelongsTo(Category::class);
     }
 }
