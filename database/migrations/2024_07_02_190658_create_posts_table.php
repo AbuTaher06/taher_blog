@@ -23,7 +23,7 @@ return new class extends Migration
 
             // Define foreign key constraints after columns are defined
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
-            $table->foreign('categories_id')->references('id')->on('categories')->nullOnDelete();
+            $table->foreign('categories_id')->references('id')->on('categories')->cascadeOnDelete();
         });
     }
 

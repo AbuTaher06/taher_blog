@@ -1,23 +1,20 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class ProfileUpdateRequest extends FormRequest
+class ProfileController extends Controller
 {
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+     * Show the form for editing the user's profile.
      */
-    public function rules(): array
+    public function edit()
     {
-        return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
-        ];
+        $user = Auth::user();
+        return view('profile.edit', compact('user'));
     }
+
+    // Other methods like update or destroy can follow
 }

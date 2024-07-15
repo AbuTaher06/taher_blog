@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
@@ -13,7 +17,9 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        return view('admin.posts.index', [
+            'posts' => Post::latest()->paginate(10),
+        ]);
     }
 
     /**
@@ -21,7 +27,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::latest()->get();
+        return view('admin.posts.create', compact('categories'));
     }
 
     /**
@@ -29,15 +36,18 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-        //
-    }
+        $validated = $request->validated();
+        $validated['slug'] = Str::slug($validated['title']);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Post $post)
-    {
-        //
+        // Create the post
+        $post = Auth::user()->posts()->create($validated);
+
+        if ($post) {
+            flash()->success('Post has been created.');
+            return redirect()->route('admin.posts.index');
+        }
+
+        return back();
     }
 
     /**
@@ -45,7 +55,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        $categories = Category::latest()->get();
+        return view('admin.posts.edit', compact('post', 'categories'));
     }
 
     /**
@@ -53,7 +64,16 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
-        //
+        $validated = $request->validated();
+
+        if ($validated['title'] !== $post->title) {
+            $validated['slug'] = Str::slug($validated['title']);
+        }
+
+        $post->updateOrFail($validated);
+
+        flash()->success('Post has been updated.');
+        return redirect()->route('admin.posts.index');
     }
 
     /**
@@ -61,6 +81,8 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post->deleteOrFail();
+        flash()->warning('Post has been deleted.');
+        return redirect()->route('admin.posts.index');
     }
 }

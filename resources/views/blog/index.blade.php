@@ -60,7 +60,7 @@
       </article>
         @empty
         <h3 class="mb-4 text-xl font-bold text-white md:text-4xl ">
-                Soory,No Posts Available.
+                Sorry,No Posts Available.
           </h3>
         @endforelse
 
